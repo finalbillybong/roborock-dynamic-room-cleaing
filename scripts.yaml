@@ -1,0 +1,139 @@
+alias: "Vacuum: Dynamic Room Cleaning"
+sequence:
+  - variables:
+      room_segments:
+        - input_boolean.alex: 19
+        - input_boolean.bedroom: 18
+        - input_boolean.thomas: 21
+        - input_boolean.hallway: 20
+        - input_boolean.bathroom: 22
+        - input_boolean.lounge: 16
+        - input_boolean.kitchen: 17
+      active_segments: >
+        {%- set segments = [] -%}   {%- set state_message = [] -%}   {%- if
+        is_state('input_boolean.alex', 'on') %} 
+          {%- set segments = segments + [19] -%}
+          {%- set state_message = state_message + ['input_boolean.alex: on'] -%}
+        {%- endif %}   {%- if is_state('input_boolean.bedroom', 'on') %} 
+          {%- set segments = segments + [18] -%}
+          {%- set state_message = state_message + ['input_boolean.bedroom: on'] -%}
+        {%- endif %}   {%- if is_state('input_boolean.thomas', 'on') %} 
+          {%- set segments = segments + [21] -%}
+          {%- set state_message = state_message + ['input_boolean.thomas: on'] -%}
+        {%- endif %}   {%- if is_state('input_boolean.hallway', 'on') %} 
+          {%- set segments = segments + [20] -%}
+          {%- set state_message = state_message + ['input_boolean.hallway: on'] -%}
+        {%- endif %}   {%- if is_state('input_boolean.bathroom', 'on') %} 
+          {%- set segments = segments + [22] -%}
+          {%- set state_message = state_message + ['input_boolean.bathroom: on'] -%}
+        {%- endif %}   {%- if is_state('input_boolean.lounge', 'on') %} 
+          {%- set segments = segments + [16] -%}
+          {%- set state_message = state_message + ['input_boolean.lounge: on'] -%}
+        {%- endif %}   {%- if is_state('input_boolean.kitchen', 'on') %} 
+          {%- set segments = segments + [17] -%}
+          {%- set state_message = state_message + ['input_boolean.kitchen: on'] -%}
+        {%- endif %}   {{ segments }}
+  - condition: template
+    value_template: "{{ active_segments | length > 0 }}"
+  - action: select.select_option
+    data:
+      option: "off"
+    target:
+      entity_id: select.roborock_qrevo_master_mop_intensity
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 2
+      milliseconds: 0
+  - action: vacuum.send_command
+    data:
+      command: app_segment_clean
+      params:
+        - segments: "{{ active_segments }}"
+          repeat: "{{ states('input_number.vacuum_repeat') | int }}"
+    target:
+      entity_id: vacuum.roborock_vacuum_a27
+  - data:
+      entity_id: |
+        {% set active_rooms = [
+          'input_boolean.alex',
+          'input_boolean.bedroom',
+          'input_boolean.thomas',
+          'input_boolean.hallway',
+          'input_boolean.bathroom',
+          'input_boolean.lounge',
+          'input_boolean.kitchen'
+        ] %} {{ active_rooms | select('is_state', 'on') | list }}
+    action: input_boolean.turn_off
+  - action: input_number.set_value
+    metadata: {}
+    data:
+      value: 1
+    target:
+      entity_id: input_number.vacuum_repeat
+mode: single
+icon: mdi:robot-vacuum
+
+alias: "Vacuum: Dynamic Room Mopping"
+sequence:
+  - variables:
+      room_segments:
+        - input_boolean.bathroom: 22
+        - input_boolean.lounge: 16
+        - input_boolean.kitchen: 17
+      active_segments: >
+        {%- set segments = [] -%}   {%- set state_message = [] -%}   {%- if
+        is_state('input_boolean.bathroom', 'on') %} 
+          {%- set segments = segments + [22] -%}
+          {%- set state_message = state_message + ['input_boolean.bathroom: on'] -%}
+        {%- endif %}    {%- if is_state('input_boolean.lounge', 'on') %} 
+          {%- set segments = segments + [16] -%}
+          {%- set state_message = state_message + ['input_boolean.lounge: on'] -%}
+        {%- endif %}    {%- if is_state('input_boolean.kitchen', 'on') %} 
+          {%- set segments = segments + [17] -%}
+          {%- set state_message = state_message + ['input_boolean.kitchen: on'] -%}
+        {%- endif %}    {{ segments }}
+  - condition: template
+    value_template: "{{ active_segments | length > 0 }}"
+  - action: vacuum.set_fan_speed
+    target:
+      entity_id:
+        - vacuum.roborock_vacuum_a27
+    data:
+      fan_speed: "off"
+  - delay:
+      seconds: 5
+  - target:
+      entity_id: vacuum.roborock_vacuum_a27
+    data:
+      command: set_water_box_custom_mode
+      params: 203
+    action: vacuum.send_command
+  - delay:
+      seconds: 2
+  - action: vacuum.send_command
+    data:
+      command: app_segment_clean
+      params:
+        - segments: "{{ active_segments }}"
+          repeat: "{{ states('input_number.vacuum_repeat') | int }}"
+    target:
+      entity_id: vacuum.roborock_vacuum_a27
+  - data:
+      entity_id: |
+        {% set active_rooms = [
+          'input_boolean.alex',
+          'input_boolean.bedroom',
+          'input_boolean.thomas',
+          'input_boolean.hallway',
+          'input_boolean.bathroom',
+          'input_boolean.lounge',
+          'input_boolean.kitchen'
+        ] %} {{ active_rooms | select('is_state', 'on') | list }}
+    action: input_boolean.turn_off
+  - action: input_number.set_value
+    metadata: {}
+    data:
+      value: 1
+    target:
+      entity_id: input_number.vacuum_repeat

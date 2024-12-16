@@ -1,0 +1,22 @@
+
+   alex:
+    name: Alex
+    icon: mdi:robot-vacuum
+   thomas:
+    name: Thomas
+    icon: mdi:robot-vacuum
+   bedroom:
+    name: Bedroom
+    icon: mdi:robot-vacuum
+   hallway:
+    name: Hallway
+    icon: mdi:robot-vacuum
+   bathroom:
+    name: Bathroom
+    icon: mdi:robot-vacuum
+   Lounge:
+    name: Lounge
+    icon: mdi:robot-vacuum
+   kitchen:
+    name: Kitchen
+    icon: mdi:robot-vacuum

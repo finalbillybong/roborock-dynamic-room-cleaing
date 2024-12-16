@@ -1,0 +1,8 @@
+
+  vacuum_rooms:
+    name: vacuum_rooms
+    icon: mdi:robot-vacuum
+    
+  vacuum_rooms:
+    name: mop_rooms
+    icon: mdi:robot-vacuum

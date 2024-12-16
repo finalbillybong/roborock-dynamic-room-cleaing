@@ -1,0 +1,22 @@
+alias: "Vacuum: Trigger Room Mopping on Button Press"
+description: ""
+triggers:
+  - entity_id:
+      - input_button.mop_rooms
+    trigger: state
+conditions: []
+actions:
+  - action: script.vacuum_dynamic_room_mopping
+    data: {}
+mode: single
+
+alias: "Vacuum: Trigger Room Cleaning on Button Press"
+triggers:
+  - entity_id:
+      - input_button.vacuum_rooms
+    trigger: state
+conditions: []
+actions:
+  - action: script.vacuum_dynamic_room_cleaning
+    data: {}
+mode: single
