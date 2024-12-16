@@ -35,3 +35,5 @@ target:
   entity_id: vacuum.your_vacuum_id
 
 Repalce the rooms ID's with your own and customise the input booleans to match your room names. 
+
+The scripts set the vacuum to either vacuum only or mop only. 
